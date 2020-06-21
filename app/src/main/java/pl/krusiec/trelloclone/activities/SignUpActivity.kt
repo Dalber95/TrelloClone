@@ -29,13 +29,8 @@ class SignUpActivity : BaseActivity() {
         actionBar?.setDisplayHomeAsUpEnabled(true)
         actionBar?.setHomeAsUpIndicator(R.drawable.ic_black_color_back_24dp)
 
-        toolbarSignUpActivity.setNavigationOnClickListener {
-            onBackPressed()
-        }
-
-        btnSignUp.setOnClickListener {
-            registerUser()
-        }
+        toolbarSignUpActivity.setNavigationOnClickListener { onBackPressed() }
+        btnSignUp.setOnClickListener { registerUser() }
     }
 
     private fun registerUser() {
@@ -59,7 +54,7 @@ class SignUpActivity : BaseActivity() {
                         FirebaseAuth.getInstance().signOut()
                         finish()
                     } else {
-                        Toast.makeText(this, task.exception!!.message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Registration failed", Toast.LENGTH_SHORT).show()
                     }
                 }
         }
