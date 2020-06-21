@@ -1,9 +1,10 @@
-package pl.krusiec.trelloclone
+package pl.krusiec.trelloclone.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.WindowManager
 import kotlinx.android.synthetic.main.activity_sign_in.*
+import pl.krusiec.trelloclone.R
 
 class SignInActivity : AppCompatActivity() {
 

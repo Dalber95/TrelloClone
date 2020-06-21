@@ -1,4 +1,4 @@
-package pl.krusiec.trelloclone
+package pl.krusiec.trelloclone.activities
 
 import android.content.Intent
 import android.graphics.Typeface
@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.view.WindowManager
 import kotlinx.android.synthetic.main.activity_splash.*
+import pl.krusiec.trelloclone.R
 
 class SplashActivity : AppCompatActivity() {
 

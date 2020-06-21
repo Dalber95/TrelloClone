@@ -1,12 +1,12 @@
-package pl.krusiec.trelloclone
+package pl.krusiec.trelloclone.activities
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.WindowManager
 import kotlinx.android.synthetic.main.activity_intro.*
+import pl.krusiec.trelloclone.R
 
-class IntroActivity : AppCompatActivity() {
+class IntroActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
