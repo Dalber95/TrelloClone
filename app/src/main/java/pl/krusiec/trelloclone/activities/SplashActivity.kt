@@ -8,6 +8,7 @@ import android.os.Handler
 import android.view.WindowManager
 import kotlinx.android.synthetic.main.activity_splash.*
 import pl.krusiec.trelloclone.R
+import pl.krusiec.trelloclone.firebase.FirestoreClass
 
 class SplashActivity : AppCompatActivity() {
 
@@ -24,7 +25,12 @@ class SplashActivity : AppCompatActivity() {
         tvAppName.typeface = typeFace
 
         Handler().postDelayed({
-            startActivity(Intent(this, IntroActivity::class.java))
+            val currentUserID = FirestoreClass().getCurrentUserId()
+            if (currentUserID.isNotEmpty()) {
+                startActivity(Intent(this, MainActivity::class.java))
+            } else {
+                startActivity(Intent(this, IntroActivity::class.java))
+            }
             finish()
         }, 2500)
     }
