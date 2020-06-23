@@ -6,6 +6,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import pl.krusiec.trelloclone.activities.MainActivity
+import pl.krusiec.trelloclone.activities.MyProfileActivity
 import pl.krusiec.trelloclone.activities.SignInActivity
 
 import pl.krusiec.trelloclone.activities.SignUpActivity
@@ -25,7 +26,7 @@ class FirestoreClass {
             }
     }
 
-    fun signInUser(activity: Activity) {
+    fun loadUserData(activity: Activity) {
         fireStore.collection(Constants.USERS)
             .document(getCurrentUserId())
             .get()
@@ -33,22 +34,15 @@ class FirestoreClass {
                 val loggedInUser = document.toObject(User::class.java)!!
 
                 when (activity) {
-                    is SignInActivity -> {
-                        activity.signInSuccess(loggedInUser)
-                    }
-                    is MainActivity -> {
-                        activity.updateNavigationUserDetails(loggedInUser)
-                    }
+                    is SignInActivity -> activity.signInSuccess(loggedInUser)
+                    is MainActivity -> activity.updateNavigationUserDetails(loggedInUser)
+                    is MyProfileActivity -> activity.setUserDataInUI(loggedInUser)
                 }
             }
             .addOnFailureListener { e ->
                 when (activity) {
-                    is SignInActivity -> {
-                        activity.hideProgressDialog()
-                    }
-                    is MainActivity -> {
-                        activity.hideProgressDialog()
-                    }
+                    is SignInActivity -> activity.hideProgressDialog()
+                    is MainActivity -> activity.hideProgressDialog()
                 }
                 Log.e("SignInUser", "Error writing document", e)
             }

@@ -54,7 +54,7 @@ class SignInActivity : BaseActivity() {
             showProgressDialog(resources.getString(R.string.please_wait))
             auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this) { task ->
                 if (task.isSuccessful) {
-                    FirestoreClass().signInUser(this)
+                    FirestoreClass().loadUserData(this)
                 } else {
                     Toast.makeText(this, task.exception!!.message, Toast.LENGTH_LONG).show()
                 }
