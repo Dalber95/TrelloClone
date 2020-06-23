@@ -29,6 +29,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setupActionBar()
         navigationView.setNavigationItemSelectedListener(this)
         FirestoreClass().loadUserData(this)
+        fabCreateBoard.setOnClickListener {
+            startActivity(Intent(this, CreateBoardActivity::class.java))
+        }
     }
 
     private fun setupActionBar() {
