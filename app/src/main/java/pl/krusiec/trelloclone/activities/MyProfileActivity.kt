@@ -6,9 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
 import android.util.Log
-import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -23,11 +21,6 @@ import pl.krusiec.trelloclone.utils.Constants
 import java.io.IOException
 
 class MyProfileActivity : BaseActivity() {
-
-    companion object {
-        private const val READ_STORAGE_PERMISSION_CODE = 1
-        private const val PICK_IMAGE_REQUEST_CODE = 2
-    }
 
     private var selectedImageFileUri: Uri? = null
     private var profileImageURL: String = ""
@@ -46,12 +39,12 @@ class MyProfileActivity : BaseActivity() {
                     Manifest.permission.READ_EXTERNAL_STORAGE
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
-                showImageChooser()
+                Constants.showImageChooser(this)
             } else {
                 ActivityCompat.requestPermissions(
                     this,
                     arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-                    READ_STORAGE_PERMISSION_CODE
+                    Constants.READ_STORAGE_PERMISSION_CODE
                 )
             }
         }
@@ -59,7 +52,7 @@ class MyProfileActivity : BaseActivity() {
         btnUpdate.setOnClickListener {
             if (selectedImageFileUri != null) {
                 uploadUserImage()
-            } else{
+            } else {
                 showProgressDialog(resources.getString(R.string.please_wait))
                 updateUserProfileData()
             }
@@ -72,9 +65,9 @@ class MyProfileActivity : BaseActivity() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == READ_STORAGE_PERMISSION_CODE) {
+        if (requestCode == Constants.READ_STORAGE_PERMISSION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                showImageChooser()
+                Constants.showImageChooser(this)
             }
         } else {
             Toast.makeText(
@@ -85,14 +78,9 @@ class MyProfileActivity : BaseActivity() {
         }
     }
 
-    private fun showImageChooser() {
-        val galleryIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        startActivityForResult(galleryIntent, PICK_IMAGE_REQUEST_CODE)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == Activity.RESULT_OK && requestCode == PICK_IMAGE_REQUEST_CODE && data!!.data != null) {
+        if (resultCode == Activity.RESULT_OK && requestCode == Constants.PICK_IMAGE_REQUEST_CODE && data!!.data != null) {
             selectedImageFileUri = data.data
 
             try {
@@ -155,8 +143,8 @@ class MyProfileActivity : BaseActivity() {
         showProgressDialog(resources.getString(R.string.please_wait))
         if (selectedImageFileUri != null) {
             val storageReference: StorageReference = FirebaseStorage.getInstance().reference.child(
-                "USER_IMAGE" + System.currentTimeMillis() + "." + getFileExtension(
-                    selectedImageFileUri
+                "USER_IMAGE" + System.currentTimeMillis() + "." + Constants.getFileExtension(
+                    this, selectedImageFileUri
                 )
             )
             storageReference.putFile(selectedImageFileUri!!).addOnSuccessListener { taskSnapshot ->
@@ -176,10 +164,6 @@ class MyProfileActivity : BaseActivity() {
             }
 
         }
-    }
-
-    private fun getFileExtension(uri: Uri?): String? {
-        return MimeTypeMap.getSingleton().getExtensionFromMimeType(contentResolver.getType(uri!!))
     }
 
     fun profileUpdateSuccess() {
