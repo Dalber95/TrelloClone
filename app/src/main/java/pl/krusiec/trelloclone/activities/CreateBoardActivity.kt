@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -16,15 +15,19 @@ import pl.krusiec.trelloclone.R
 import pl.krusiec.trelloclone.utils.Constants
 import java.io.IOException
 
-class CreateBoardActivity : AppCompatActivity() {
+class CreateBoardActivity : BaseActivity() {
 
     private var selectedImageFileUri: Uri? = null
+    private lateinit var userName: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_create_board)
-
         setupActionBar()
+
+        if(intent.hasExtra(Constants.NAME)){
+            userName = intent.getStringExtra(Constants.NAME)!!
+        }
 
         ivBoardImage.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
@@ -41,6 +44,11 @@ class CreateBoardActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    fun boardCreatedSuccessfully(){
+        hideProgressDialog()
+        finish()
     }
 
     private fun setupActionBar() {

@@ -15,12 +15,15 @@ import kotlinx.android.synthetic.main.nav_header_main.*
 import pl.krusiec.trelloclone.R
 import pl.krusiec.trelloclone.firebase.FirestoreClass
 import pl.krusiec.trelloclone.models.User
+import pl.krusiec.trelloclone.utils.Constants
 
 class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     companion object{
         const val MY_PROFILE_REQUEST_CODE: Int = 11
     }
+
+    private lateinit var userName: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +33,9 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         navigationView.setNavigationItemSelectedListener(this)
         FirestoreClass().loadUserData(this)
         fabCreateBoard.setOnClickListener {
-            startActivity(Intent(this, CreateBoardActivity::class.java))
+            val intent = Intent(this, CreateBoardActivity::class.java)
+            intent.putExtra(Constants.NAME, userName)
+            startActivity(intent)
         }
     }
 
@@ -60,6 +65,8 @@ class MainActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     fun updateNavigationUserDetails(user: User) {
+        userName = user.name
+
         Glide.with(this)
             .load(user.image)
             .centerCrop()
