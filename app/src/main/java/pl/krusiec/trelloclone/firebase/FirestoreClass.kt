@@ -25,6 +25,20 @@ class FirestoreClass {
             }
     }
 
+    fun getBoardsDetails(activity: TaskListActivity, documentId: String) {
+        fireStore.collection(Constants.BOARDS)
+            .document(documentId)
+            .get()
+            .addOnSuccessListener { document ->
+                Log.i(activity.javaClass.simpleName, document.toString())
+                activity.boardDetails(document.toObject(Board::class.java)!!)
+
+            }.addOnFailureListener { e ->
+                activity.hideProgressDialog()
+                Log.e(activity.javaClass.simpleName, "Error while creating a board.", e)
+            }
+    }
+
     fun createBoard(activity: CreateBoardActivity, board: Board) {
         fireStore.collection(Constants.BOARDS)
             .document()
@@ -85,7 +99,10 @@ class FirestoreClass {
 
                 when (activity) {
                     is SignInActivity -> activity.signInSuccess(loggedInUser)
-                    is MainActivity -> activity.updateNavigationUserDetails(loggedInUser, readBoardsList)
+                    is MainActivity -> activity.updateNavigationUserDetails(
+                        loggedInUser,
+                        readBoardsList
+                    )
                     is MyProfileActivity -> activity.setUserDataInUI(loggedInUser)
                 }
             }
