@@ -33,9 +33,30 @@ class FirestoreClass {
                 Log.e(activity.javaClass.simpleName, "Board created successfully.")
                 Toast.makeText(activity, "Board created successfully.", Toast.LENGTH_SHORT).show()
                 activity.boardCreatedSuccessfully()
-            }.addOnFailureListener {exception ->
+            }.addOnFailureListener { exception ->
                 activity.hideProgressDialog()
                 Log.e(activity.javaClass.simpleName, "Error while creating a board.", exception)
+            }
+    }
+
+    fun getBoardsList(activity: MainActivity) {
+        fireStore.collection(Constants.BOARDS)
+            .whereArrayContains(Constants.ASSIGNED_TO, getCurrentUserId())
+            .get()
+            .addOnSuccessListener { document ->
+                Log.i(activity.javaClass.simpleName, document.documents.toString())
+                val boardsList: ArrayList<Board> = ArrayList()
+
+                for (i in document.documents) {
+                    val board = i.toObject(Board::class.java)!!
+                    board.documentId = i.id
+                    boardsList.add(board)
+                }
+
+                activity.populateBoardsListToUI(boardsList)
+            }.addOnFailureListener { e ->
+                activity.hideProgressDialog()
+                Log.e(activity.javaClass.simpleName, "Error while creating a board.", e)
             }
     }
 
@@ -55,7 +76,7 @@ class FirestoreClass {
             }
     }
 
-    fun loadUserData(activity: Activity) {
+    fun loadUserData(activity: Activity, readBoardsList: Boolean = false) {
         fireStore.collection(Constants.USERS)
             .document(getCurrentUserId())
             .get()
@@ -64,7 +85,7 @@ class FirestoreClass {
 
                 when (activity) {
                     is SignInActivity -> activity.signInSuccess(loggedInUser)
-                    is MainActivity -> activity.updateNavigationUserDetails(loggedInUser)
+                    is MainActivity -> activity.updateNavigationUserDetails(loggedInUser, readBoardsList)
                     is MyProfileActivity -> activity.setUserDataInUI(loggedInUser)
                 }
             }
