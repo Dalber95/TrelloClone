@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_task.view.*
 import pl.krusiec.trelloclone.R
+import pl.krusiec.trelloclone.activities.TaskListActivity
 import pl.krusiec.trelloclone.models.Task
 
 open class TaskListItemsAdapter(private val context: Context, private var list: ArrayList<Task>) :
@@ -36,6 +38,29 @@ open class TaskListItemsAdapter(private val context: Context, private var list: 
             } else {
                 holder.itemView.tvAddTaskList.visibility = View.GONE
                 holder.itemView.llTaskItem.visibility = View.VISIBLE
+            }
+
+            holder.itemView.tvTaskListTitle.text = model.title
+            holder.itemView.tvAddTaskList.setOnClickListener {
+                holder.itemView.tvAddTaskList.visibility = View.GONE
+                holder.itemView.cvAddTaskListName.visibility = View.VISIBLE
+            }
+
+            holder.itemView.ibCloseListName.setOnClickListener {
+                holder.itemView.tvAddTaskList.visibility = View.VISIBLE
+                holder.itemView.cvAddTaskListName.visibility = View.GONE
+            }
+
+            holder.itemView.ibDoneListName.setOnClickListener {
+                val listName = holder.itemView.etTaskListName.text.toString()
+
+                if (listName.isNotEmpty()){
+                    if (context is TaskListActivity){
+                        context.createTaskList(listName)
+                    }
+                }else{
+                    Toast.makeText(context, "Please Enter List Name.", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
