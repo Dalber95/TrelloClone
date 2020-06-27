@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.item_task.view.*
 import pl.krusiec.trelloclone.R
@@ -115,6 +116,11 @@ open class TaskListItemsAdapter(private val context: Context, private var list: 
                     Toast.makeText(context, "Please Enter a Card Name.", Toast.LENGTH_SHORT).show()
                 }
             }
+
+            holder.itemView.rvCardList.layoutManager = LinearLayoutManager(context)
+            holder.itemView.rvCardList.setHasFixedSize(true)
+            val adapter = CardListItemsAdapter(context, model.cards)
+            holder.itemView.rvCardList.adapter = adapter
         }
     }
 
