@@ -18,12 +18,13 @@ import pl.krusiec.trelloclone.utils.Constants
 class MembersActivity : BaseActivity() {
 
     private lateinit var boardDetails: Board
+    private lateinit var assignedMembersList: ArrayList<User>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_members)
 
-        if (intent.hasExtra(Constants.BOARD_DETAIL)){
+        if (intent.hasExtra(Constants.BOARD_DETAIL)) {
             boardDetails = intent.getParcelableExtra(Constants.BOARD_DETAIL)!!
         }
         setupActionBar()
@@ -32,7 +33,8 @@ class MembersActivity : BaseActivity() {
         FirestoreClass().getAssignedMembersListDetails(this, boardDetails.assignedTo)
     }
 
-    fun setupMembersList(list: ArrayList<User>){
+    fun setupMembersList(list: ArrayList<User>) {
+        assignedMembersList = list
         hideProgressDialog()
 
         rvMembersList.layoutManager = LinearLayoutManager(this)
@@ -40,6 +42,11 @@ class MembersActivity : BaseActivity() {
 
         val adapter = MemberListItemsAdapter(this, list)
         rvMembersList.adapter = adapter
+    }
+
+    fun memberDetails(user: User){
+        boardDetails.assignedTo.add(user.id)
+        FirestoreClass().assignMemberToBoard(this, boardDetails, user)
     }
 
     private fun setupActionBar() {
@@ -58,8 +65,8 @@ class MembersActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.action_add_member ->{
+        when (item.itemId) {
+            R.id.action_add_member -> {
                 dialogSearchMember()
                 return true
             }
@@ -68,21 +75,32 @@ class MembersActivity : BaseActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-    private fun dialogSearchMember(){
+    private fun dialogSearchMember() {
         val dialog = Dialog(this)
         dialog.setContentView(R.layout.dialog_search_member)
         dialog.tvAdd.setOnClickListener {
             val email = dialog.etEmailSearchMember.text.toString()
-            if (email.isNotEmpty()){
+            if (email.isNotEmpty()) {
                 dialog.dismiss()
-                // TODO implement adding member logic
+                showProgressDialog(resources.getString(R.string.please_wait))
+                FirestoreClass().getMemberDetails(this, email)
             } else {
-                Toast.makeText(this@MembersActivity, "Please enter members email address.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@MembersActivity,
+                    "Please enter members email address.",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
         dialog.tvCancel.setOnClickListener {
             dialog.dismiss()
         }
         dialog.show()
+    }
+
+    fun memberAssignSuccess(user: User){
+        hideProgressDialog()
+        assignedMembersList.add(user)
+        setupMembersList(assignedMembersList)
     }
 }
