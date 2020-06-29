@@ -33,6 +33,11 @@ class CardDetailsActivity : BaseActivity() {
         etNameCardDetails.setText(boardDetails.taskList[taskListPosition].cards[cardPosition].name)
         etNameCardDetails.setSelection(etNameCardDetails.text.toString().length)
 
+        selectedColor = boardDetails.taskList[taskListPosition].cards[cardPosition].labelColor
+        if (selectedColor.isNotEmpty()){
+            setColor()
+        }
+
         btnUpdateCardDetails.setOnClickListener {
             if (etNameCardDetails.text.toString().isNotEmpty()) {
                 updateCardDetails()
@@ -160,7 +165,7 @@ class CardDetailsActivity : BaseActivity() {
 
     private fun labelColorsListDialog(){
         val colorsList: ArrayList<String> = colorsList()
-        val listDialog = object : LabelColorListDialog(this, colorsList, resources.getString(R.string.str_select_label_color)){
+        val listDialog = object : LabelColorListDialog(this, colorsList, resources.getString(R.string.str_select_label_color), selectedColor){
 
             override fun onItemSelected(color: String) {
                 selectedColor = color

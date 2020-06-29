@@ -1,6 +1,7 @@
 package pl.krusiec.trelloclone.adapters
 
 import android.content.Context
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,6 +27,14 @@ open class CardListItemsAdapter(private val context: Context, private var list: 
         val model = list[position]
 
         if (holder is MyViewHolder) {
+
+            if(model.labelColor.isNotEmpty()){
+                holder.itemView.viewLabelColor.visibility = View.VISIBLE
+                holder.itemView.viewLabelColor.setBackgroundColor(Color.parseColor(model.labelColor))
+            }else{
+                holder.itemView.viewLabelColor.visibility = View.GONE
+            }
+
             holder.itemView.tvCardName.text = model.name
             holder.itemView.setOnClickListener {
                 if (onClickListener != null){
