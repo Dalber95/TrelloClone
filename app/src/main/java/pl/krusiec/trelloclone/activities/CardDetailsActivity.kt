@@ -2,6 +2,7 @@ package pl.krusiec.trelloclone.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
 import kotlinx.android.synthetic.main.activity_card_details.*
 import pl.krusiec.trelloclone.R
 import pl.krusiec.trelloclone.models.Board
@@ -19,6 +20,9 @@ class CardDetailsActivity : AppCompatActivity() {
 
         getIntentData()
         setupActionBar()
+
+        etNameCardDetails.setText(boardDetails.taskList[taskListPosition].cards[cardPosition].name)
+        etNameCardDetails.setSelection(etNameCardDetails.text.toString().length)
     }
 
     private fun setupActionBar() {
@@ -31,14 +35,19 @@ class CardDetailsActivity : AppCompatActivity() {
         toolbarCardDetailsActivity.setNavigationOnClickListener { onBackPressed() }
     }
 
-    private fun getIntentData(){
-        if(intent.hasExtra(Constants.BOARD_DETAIL)){
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_delete_card, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun getIntentData() {
+        if (intent.hasExtra(Constants.BOARD_DETAIL)) {
             boardDetails = intent.getParcelableExtra(Constants.BOARD_DETAIL)!!
         }
-        if(intent.hasExtra(Constants.TASK_LIST_ITEM_POSITION)){
+        if (intent.hasExtra(Constants.TASK_LIST_ITEM_POSITION)) {
             taskListPosition = intent.getIntExtra(Constants.TASK_LIST_ITEM_POSITION, -1)
         }
-        if(intent.hasExtra(Constants.CARD_LIST_ITEM_POSITION)){
+        if (intent.hasExtra(Constants.CARD_LIST_ITEM_POSITION)) {
             cardPosition = intent.getIntExtra(Constants.CARD_LIST_ITEM_POSITION, -1)
         }
     }
