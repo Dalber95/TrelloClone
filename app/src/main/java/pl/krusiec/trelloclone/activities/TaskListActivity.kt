@@ -18,7 +18,7 @@ import pl.krusiec.trelloclone.utils.Constants
 
 class TaskListActivity : BaseActivity() {
 
-    private lateinit var boardDetails : Board
+    private lateinit var boardDetails: Board
     private lateinit var boardDocumentId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,16 +36,20 @@ class TaskListActivity : BaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if(resultCode == Activity.RESULT_OK && requestCode == MEMBERS_REQUEST_CODE){
+        if (resultCode == Activity.RESULT_OK && requestCode == MEMBERS_REQUEST_CODE) {
             showProgressDialog(resources.getString(R.string.please_wait))
             FirestoreClass().getBoardsDetails(this, boardDocumentId)
-        }else{
+        } else {
             Log.e("Cancelled", "Cancelled")
         }
     }
 
-    fun cardDetails(taskListPosition: Int, cardPosition: Int){
-        startActivity(Intent(this, CardDetailsActivity::class.java))
+    fun cardDetails(taskListPosition: Int, cardPosition: Int) {
+        val intent = Intent(this, CardDetailsActivity::class.java)
+        intent.putExtra(Constants.BOARD_DETAIL, boardDetails)
+        intent.putExtra(Constants.TASK_LIST_ITEM_POSITION, taskListPosition)
+        intent.putExtra(Constants.CARD_LIST_ITEM_POSITION, cardPosition)
+        startActivity(intent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -54,7 +58,7 @@ class TaskListActivity : BaseActivity() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             R.id.action_members -> {
                 val intent = Intent(this, MembersActivity::class.java)
                 intent.putExtra(Constants.BOARD_DETAIL, boardDetails)
@@ -76,7 +80,7 @@ class TaskListActivity : BaseActivity() {
         toolbarTaskListActivity.setNavigationOnClickListener { onBackPressed() }
     }
 
-    fun boardDetails(board: Board){
+    fun boardDetails(board: Board) {
         boardDetails = board
         hideProgressDialog()
         setupActionBar()
@@ -91,13 +95,13 @@ class TaskListActivity : BaseActivity() {
         rvTaskList.adapter = adapter
     }
 
-    fun addUpdateTaskListSuccess(){
+    fun addUpdateTaskListSuccess() {
         hideProgressDialog()
         showProgressDialog(resources.getString(R.string.please_wait))
         FirestoreClass().getBoardsDetails(this, boardDetails.documentId)
     }
 
-    fun createTaskList(taskListName: String){
+    fun createTaskList(taskListName: String) {
         val task = Task(taskListName, FirestoreClass().getCurrentUserId())
         boardDetails.taskList.add(0, task)
         boardDetails.taskList.removeAt(boardDetails.taskList.size - 1)
@@ -107,7 +111,7 @@ class TaskListActivity : BaseActivity() {
         FirestoreClass().addUpdateTaskList(this, boardDetails)
     }
 
-    fun updateTaskList(position: Int, listName: String, model: Task){
+    fun updateTaskList(position: Int, listName: String, model: Task) {
         val task = Task(listName, model.createdBy)
 
         boardDetails.taskList[position] = task
@@ -117,7 +121,7 @@ class TaskListActivity : BaseActivity() {
         FirestoreClass().addUpdateTaskList(this, boardDetails)
     }
 
-    fun deleteTaskList(position: Int){
+    fun deleteTaskList(position: Int) {
         boardDetails.taskList.removeAt(position)
         boardDetails.taskList.removeAt(boardDetails.taskList.size - 1)
 
@@ -125,7 +129,7 @@ class TaskListActivity : BaseActivity() {
         FirestoreClass().addUpdateTaskList(this, boardDetails)
     }
 
-    fun addCardToTaskList(position: Int, cardName: String){
+    fun addCardToTaskList(position: Int, cardName: String) {
         boardDetails.taskList.removeAt(boardDetails.taskList.size - 1)
 
         val cardAssignedUsersList: ArrayList<String> = ArrayList()
@@ -135,14 +139,18 @@ class TaskListActivity : BaseActivity() {
         val cardsList = boardDetails.taskList[position].cards
         cardsList.add(card)
 
-        val task = Task(boardDetails.taskList[position].title, boardDetails.taskList[position].createdBy, cardsList)
+        val task = Task(
+            boardDetails.taskList[position].title,
+            boardDetails.taskList[position].createdBy,
+            cardsList
+        )
 
         boardDetails.taskList[position] = task
         showProgressDialog(resources.getString(R.string.please_wait))
         FirestoreClass().addUpdateTaskList(this, boardDetails)
     }
 
-    companion object{
+    companion object {
         const val MEMBERS_REQUEST_CODE: Int = 13
     }
 }
