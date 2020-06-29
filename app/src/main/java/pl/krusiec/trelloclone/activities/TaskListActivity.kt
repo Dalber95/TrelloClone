@@ -14,12 +14,14 @@ import pl.krusiec.trelloclone.firebase.FirestoreClass
 import pl.krusiec.trelloclone.models.Board
 import pl.krusiec.trelloclone.models.Card
 import pl.krusiec.trelloclone.models.Task
+import pl.krusiec.trelloclone.models.User
 import pl.krusiec.trelloclone.utils.Constants
 
 class TaskListActivity : BaseActivity() {
 
     private lateinit var boardDetails: Board
     private lateinit var boardDocumentId: String
+    private lateinit var assignedMemberDetailList: ArrayList<User>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +51,7 @@ class TaskListActivity : BaseActivity() {
         intent.putExtra(Constants.BOARD_DETAIL, boardDetails)
         intent.putExtra(Constants.TASK_LIST_ITEM_POSITION, taskListPosition)
         intent.putExtra(Constants.CARD_LIST_ITEM_POSITION, cardPosition)
+        intent.putExtra(Constants.BOARD_MEMBERS_LIST, assignedMemberDetailList)
         startActivityForResult(intent, CARD_DETAILS_REQUEST_CODE)
     }
 
@@ -93,6 +96,9 @@ class TaskListActivity : BaseActivity() {
 
         val adapter = TaskListItemsAdapter(this, board.taskList)
         rvTaskList.adapter = adapter
+
+        showProgressDialog(resources.getString(R.string.please_wait))
+        FirestoreClass().getAssignedMembersListDetails(this, boardDetails.assignedTo)
     }
 
     fun addUpdateTaskListSuccess() {
@@ -148,6 +154,11 @@ class TaskListActivity : BaseActivity() {
         boardDetails.taskList[position] = task
         showProgressDialog(resources.getString(R.string.please_wait))
         FirestoreClass().addUpdateTaskList(this, boardDetails)
+    }
+
+    fun boardMembersDetailsList(list: ArrayList<User>){
+        assignedMemberDetailList = list
+        hideProgressDialog()
     }
 
     companion object {

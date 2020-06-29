@@ -14,6 +14,7 @@ import pl.krusiec.trelloclone.firebase.FirestoreClass
 import pl.krusiec.trelloclone.models.Board
 import pl.krusiec.trelloclone.models.Card
 import pl.krusiec.trelloclone.models.Task
+import pl.krusiec.trelloclone.models.User
 import pl.krusiec.trelloclone.utils.Constants
 
 class CardDetailsActivity : BaseActivity() {
@@ -22,6 +23,7 @@ class CardDetailsActivity : BaseActivity() {
     private var taskListPosition = -1
     private var cardPosition = -1
     private var selectedColor = ""
+    private lateinit var membersDetailList: ArrayList<User>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,7 +36,7 @@ class CardDetailsActivity : BaseActivity() {
         etNameCardDetails.setSelection(etNameCardDetails.text.toString().length)
 
         selectedColor = boardDetails.taskList[taskListPosition].cards[cardPosition].labelColor
-        if (selectedColor.isNotEmpty()){
+        if (selectedColor.isNotEmpty()) {
             setColor()
         }
 
@@ -73,7 +75,7 @@ class CardDetailsActivity : BaseActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    private fun colorsList(): ArrayList<String>{
+    private fun colorsList(): ArrayList<String> {
         val colorsList: ArrayList<String> = ArrayList()
         colorsList.add("#43C86F")
         colorsList.add("#0C90F1")
@@ -85,14 +87,14 @@ class CardDetailsActivity : BaseActivity() {
         return colorsList
     }
 
-    private fun setColor(){
+    private fun setColor() {
         tvSelectLabelColor.text = ""
         tvSelectLabelColor.setBackgroundColor(Color.parseColor(selectedColor))
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            R.id.action_delete_card ->{
+        when (item.itemId) {
+            R.id.action_delete_card -> {
                 alertDialogForDeleteCard(boardDetails.taskList[taskListPosition].cards[cardPosition].name)
                 return true
             }
@@ -110,6 +112,9 @@ class CardDetailsActivity : BaseActivity() {
         }
         if (intent.hasExtra(Constants.CARD_LIST_ITEM_POSITION)) {
             cardPosition = intent.getIntExtra(Constants.CARD_LIST_ITEM_POSITION, -1)
+        }
+        if (intent.hasExtra(Constants.BOARD_MEMBERS_LIST)) {
+            membersDetailList = intent.getParcelableArrayListExtra(Constants.BOARD_MEMBERS_LIST)!!
         }
     }
 
@@ -163,9 +168,14 @@ class CardDetailsActivity : BaseActivity() {
         alertDialog.show()
     }
 
-    private fun labelColorsListDialog(){
+    private fun labelColorsListDialog() {
         val colorsList: ArrayList<String> = colorsList()
-        val listDialog = object : LabelColorListDialog(this, colorsList, resources.getString(R.string.str_select_label_color), selectedColor){
+        val listDialog = object : LabelColorListDialog(
+            this,
+            colorsList,
+            resources.getString(R.string.str_select_label_color),
+            selectedColor
+        ) {
 
             override fun onItemSelected(color: String) {
                 selectedColor = color
