@@ -10,6 +10,7 @@ import android.widget.Toast
 import kotlinx.android.synthetic.main.activity_card_details.*
 import pl.krusiec.trelloclone.R
 import pl.krusiec.trelloclone.dialogs.LabelColorListDialog
+import pl.krusiec.trelloclone.dialogs.MembersListDialog
 import pl.krusiec.trelloclone.firebase.FirestoreClass
 import pl.krusiec.trelloclone.models.Board
 import pl.krusiec.trelloclone.models.Card
@@ -51,6 +52,10 @@ class CardDetailsActivity : BaseActivity() {
 
         tvSelectLabelColor.setOnClickListener {
             labelColorsListDialog()
+        }
+
+        tvSelectMembers.setOnClickListener {
+            membersListDialog()
         }
     }
 
@@ -116,6 +121,36 @@ class CardDetailsActivity : BaseActivity() {
         if (intent.hasExtra(Constants.BOARD_MEMBERS_LIST)) {
             membersDetailList = intent.getParcelableArrayListExtra(Constants.BOARD_MEMBERS_LIST)!!
         }
+    }
+
+    private fun membersListDialog() {
+        var cardAssignedMembersList =
+            boardDetails.taskList[taskListPosition].cards[cardPosition].assignedTo
+
+        if (cardAssignedMembersList.size > 0) {
+            for (i in membersDetailList.indices) {
+                for (j in cardAssignedMembersList) {
+                    if (membersDetailList[i].id == j) {
+                        membersDetailList[i].selected = true
+                    }
+                }
+            }
+        } else {
+            for (i in membersDetailList.indices) {
+                membersDetailList[i].selected = false
+            }
+        }
+
+        val listDialog = object : MembersListDialog(
+            this,
+            membersDetailList,
+            resources.getString(R.string.str_select_member)
+        ){
+            override fun onItemSelected(user: User, action: String) {
+                // TODO implement the selected Members funcionality
+            }
+        }
+        listDialog.show()
     }
 
     private fun updateCardDetails() {
