@@ -57,6 +57,8 @@ class CardDetailsActivity : BaseActivity() {
         tvSelectMembers.setOnClickListener {
             membersListDialog()
         }
+
+        setupSelectedMembersList()
     }
 
     fun addUpdateTaskListSuccess() {
@@ -147,7 +149,20 @@ class CardDetailsActivity : BaseActivity() {
             resources.getString(R.string.str_select_member)
         ){
             override fun onItemSelected(user: User, action: String) {
-                // TODO implement the selected Members funcionality
+                if (action == Constants.SELECT){
+                    if (!boardDetails.taskList[taskListPosition].cards[cardPosition].assignedTo.contains(user.id)){
+                        boardDetails.taskList[taskListPosition].cards[cardPosition].assignedTo.add(user.id)
+                    }
+                }else {
+                    boardDetails.taskList[taskListPosition].cards[cardPosition].assignedTo.remove(user.id)
+
+                    for(i in membersDetailList.indices){
+                        if(membersDetailList[i].id == user.id){
+                            membersDetailList[i].selected = false
+                        }
+                    }
+                }
+                setupSelectedMembersList()
             }
         }
         listDialog.show()
@@ -160,6 +175,9 @@ class CardDetailsActivity : BaseActivity() {
             boardDetails.taskList[taskListPosition].cards[cardPosition].assignedTo,
             selectedColor
         )
+
+        val taskList: ArrayList<Task> = boardDetails.taskList
+        taskList.removeAt(taskList.size - 1)
 
         boardDetails.taskList[taskListPosition].cards[cardPosition] = card
 
