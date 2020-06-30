@@ -257,7 +257,7 @@ class CardDetailsActivity : BaseActivity() {
             tvSelectMembers.visibility = View.GONE
             rvSelectedMembersList.visibility = View.VISIBLE
             rvSelectedMembersList.layoutManager = GridLayoutManager(this, 6)
-            val adapter = CardMemberListItemsAdapter(this, selectedMembersList)
+            val adapter = CardMemberListItemsAdapter(this, selectedMembersList, true)
             rvSelectedMembersList.adapter = adapter
             adapter.setOnClickListener(object: CardMemberListItemsAdapter.OnClickListener{
                 override fun onClick() {

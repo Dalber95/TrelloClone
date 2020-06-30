@@ -12,7 +12,8 @@ import pl.krusiec.trelloclone.models.SelectedMembers
 
 open class CardMemberListItemsAdapter(
     private val context: Context,
-    private val list: ArrayList<SelectedMembers>
+    private val list: ArrayList<SelectedMembers>,
+    private val assignMembers: Boolean
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var onClickListener: OnClickListener? = null
@@ -31,7 +32,7 @@ open class CardMemberListItemsAdapter(
         val model = list[position]
 
         if (holder is MyViewHolder) {
-            if (position == list.size - 1) {
+            if (position == list.size - 1 && assignMembers) {
                 holder.itemView.ivAddMember.visibility = View.VISIBLE
                 holder.itemView.ivSelectedMemberImage.visibility = View.GONE
             } else {
