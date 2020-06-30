@@ -6,16 +6,16 @@ import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
+import androidx.recyclerview.widget.GridLayoutManager
 import kotlinx.android.synthetic.main.activity_card_details.*
 import pl.krusiec.trelloclone.R
+import pl.krusiec.trelloclone.adapters.CardMemberListItemsAdapter
 import pl.krusiec.trelloclone.dialogs.LabelColorListDialog
 import pl.krusiec.trelloclone.dialogs.MembersListDialog
 import pl.krusiec.trelloclone.firebase.FirestoreClass
-import pl.krusiec.trelloclone.models.Board
-import pl.krusiec.trelloclone.models.Card
-import pl.krusiec.trelloclone.models.Task
-import pl.krusiec.trelloclone.models.User
+import pl.krusiec.trelloclone.models.*
 import pl.krusiec.trelloclone.utils.Constants
 
 class CardDetailsActivity : BaseActivity() {
@@ -218,5 +218,37 @@ class CardDetailsActivity : BaseActivity() {
             }
         }
         listDialog.show()
+    }
+
+    private fun setupSelectedMembersList(){
+        val cardAssignedMemberList = boardDetails.taskList[taskListPosition].cards[cardPosition].assignedTo
+
+        val selectedMembersList: ArrayList<SelectedMembers> = ArrayList()
+
+        for (i in membersDetailList.indices) {
+            for (j in cardAssignedMemberList) {
+                if (membersDetailList[i].id == j) {
+                    val selectedMember = SelectedMembers(membersDetailList[i].id, membersDetailList[i].image)
+                    selectedMembersList.add(selectedMember)
+                }
+            }
+        }
+
+        if (selectedMembersList.size > 0){
+            selectedMembersList.add(SelectedMembers("", ""))
+            tvSelectMembers.visibility = View.GONE
+            rvSelectedMembersList.visibility = View.VISIBLE
+            rvSelectedMembersList.layoutManager = GridLayoutManager(this, 6)
+            val adapter = CardMemberListItemsAdapter(this, selectedMembersList)
+            rvSelectedMembersList.adapter = adapter
+            adapter.setOnClickListener(object: CardMemberListItemsAdapter.OnClickListener{
+                override fun onClick() {
+                    membersListDialog()
+                }
+            })
+        } else {
+            tvSelectMembers.visibility = View.VISIBLE
+            rvSelectedMembersList.visibility = View.GONE
+        }
     }
 }
